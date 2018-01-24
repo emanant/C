@@ -23,7 +23,8 @@ func main() {
 	}
 	defer session.Close()
 	session.SetMode(mgo.Monotonic, true)
-	c := session.DB("car-db").C("car")
+	c := session.DB("car-db").C("car");
+	// l := session.DB("car-db").C("login");
 
 	app := iris.New()
 	app.WrapRouter(cors.WrapNext(cors.Options{
@@ -39,6 +40,11 @@ func main() {
 
 	app.Use(crs)
 	app.Use(logger.New())
+	
+	app.Get("/{user:string}",func(ctx iris.Context) {
+		// user := ctx.Params
+	})
+
 	app.Get("/cars", func(ctx iris.Context) {
 		result := []Car{}
 		err := c.Find(nil).All(&result)
@@ -47,6 +53,7 @@ func main() {
 		}
 		ctx.JSON(result)
 	})
+
 	app.Get("/car/{id:string}", func(ctx iris.Context) {
 		result := []Car{}
 		idd := ctx.Params().Get("id")
@@ -60,24 +67,31 @@ func main() {
 	app.Post("/addCar", func(ctx iris.Context) {
 		var new Car
 		ctx.ReadJSON(&new)
-		ctx.JSON(iris.Map{"message": new})
+		result := []Car{}
 		err := c.Insert(new)
 		if err != nil {
-
 			panic(err)
+		} else {
+			err = c.Find(nil).All(&result)
 		}
-		ctx.JSON(iris.Map{"message": "New car Created"})
+		ctx.JSON(result)
 	})
 
 	app.Put("/updateOne", func(ctx iris.Context) {
 		var new Car
 		ctx.ReadJSON(&new)
+		result := []Car{}
 		// var target Car
 		// c.FindId(new.Id).One(&target)
 		// selectedCar := bson.M{"_id": bson.ObjectIdHex(idd)}
 		change := bson.M{"$set": bson.M{"name": new.Name, "type": new.Type}}
 		err = c.UpdateId(new.Id, change)
-		ctx.JSON(iris.Map{"message": "car Updated"})
+		if err != nil {
+			panic(err)
+		}else{
+			err = c.Find(nil).All(&result)
+		}
+		ctx.JSON(result)
 	})
 
 	app.Delete("/remove/{id:string}", func(ctx iris.Context) {

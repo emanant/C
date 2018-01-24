@@ -52,7 +52,8 @@ class Cars extends Component {
   //   this.render();
   // }
   editClickListner(id){
-    const c = this.state.car.find( x => x.id == id);
+    // const c = this.state.car.find( x => x.id == id);
+    const c = this.props.P_cars.find( x => x.id == id);
     console.log(id);
     this.setState({editCar : c})
   }
@@ -75,23 +76,27 @@ class Cars extends Component {
     console.log(field," : ",event.target.value);
   }
   createNewCar(event){
-    Request
-    .post('/api/addCar', this.state.newCar)
-    .then(response => {
-      console.log('added new car');
-      this.getAllCars();
-      document.getElementById("nameNewCarTextField").value=null;
-      document.getElementById("valueNewCarTextField").value=null
-    })
-    .catch(error => console.log('Failed to add car'));
+    // Request
+    // .post('/api/addCar', this.state.newCar)
+    // .then(response => {
+    //   console.log('added new car');
+    //   this.getAllCars();
+    //   document.getElementById("nameNewCarTextField").value=null;
+    //   document.getElementById("valueNewCarTextField").value=null
+    // })
+    // .catch(error => console.log('Failed to add car'));
+    this.props.dispatch(Actions.createNewCars(this.state.newCar))
+    .then(() => this.setState({newCar: null}))
   }
   updateCar(field,event,x) {
-    this.setState({editCar: Object.assign({}, this.state.editCar, {[field]: x})})
-    console.log("car to update : " + x)
-    Request
-    .put('/api/updateOne', this.state.editCar)
-    .then(response => {console.log('update success !');this.getAllCars()})
-    .catch(error => console.log('Failed to update Database'));
+    // this.setState({editCar: Object.assign({}, this.state.editCar, {[field]: x})})
+    // console.log("car to update : " + x)
+    // Request
+    // .put('/api/updateOne', this.state.editCar)
+    // .then(response => {console.log('update success !');this.getAllCars()})
+    // .catch(error => console.log('Failed to update Database'));
+    this.props.dispatch(Actions.updateCars(this.state.editCar))
+    .then(() => this.setState({editCar: null}))
   }
   deleteClickListner(id) {
     console.log("ID : ",id)
@@ -130,10 +135,12 @@ class Cars extends Component {
                   <div>
                     <TextField
                       hintText = "Name"
+                      value={this.state.editCar.name}
                       onChange={this.editElement.bind(this,"name")}
                     />
                     <TextField
                       hintText = "Type"
+                      value={this.state.editCar.type}
                       onChange={this.editElement.bind(this,"type")}
                     />
                     <FlatButton label="Update"
