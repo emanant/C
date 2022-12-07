@@ -3,7 +3,7 @@
     "axios": "^0.17.1",
     "babel-core": "^6.26.0",
     "css-loader": "^0.28.9",
-    "express": "^4.16.2",
+    "express": "^4.17.3",
     "express-http-proxy": "^1.1.0",
     "file-loader": "^1.1.6",
     "material-ui": "^0.20.0",
